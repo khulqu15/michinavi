@@ -28,7 +28,7 @@
                                     <span class="text-sm">(75.437282, 128.4739272)</span>
                                 </div>
                             </div>
-                            <img src="/assets/images/about2.png"  alt="RecordedDataNih" class="w-24 h-32 rounded-lg object-cover object-center">
+                            <img src="/assets/images/about2.png"  alt="RecordedData" class="w-24 h-32 rounded-lg object-cover object-center">
                         </div>
                     </div>
                 </div>
