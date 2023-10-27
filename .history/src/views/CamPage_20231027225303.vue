@@ -17,7 +17,7 @@
                     </h2>
                     <div class="form-control space-y-3">
                         <label for="email" class="text-sm text-base-content/50">Email Address</label>
-                        <input id="email" v-model="email" placeholder="eg. ninno@example.com" type="email" required class="input text-base-content w-full bg-base-100">
+                        <input id="email" v-model="email" placeholder="eg. ninno@example.com" type="email" required class="input w-full bg-base-100">
                         <label for="email" id="email_error" class="text-error"></label>
                     </div>
                     <ion-button type="submit" fill="clear" class="btn bg-black text-white mt-6">Start</ion-button>
