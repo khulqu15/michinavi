@@ -19,6 +19,7 @@
     "@ionic/pwa-elements": "^3.2.2",
     "@ionic/vue": "^7.0.0",
     "@ionic/vue-router": "^7.0.0",
+    "animate.css": "^4.1.1",
     "core-js": "^3.6.5",
     "ionicons": "^7.0.0",
     "vue": "^3.2.47",
