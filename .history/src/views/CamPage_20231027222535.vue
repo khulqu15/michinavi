@@ -8,7 +8,7 @@
             </div>
             <div class="max-w-md w-full p-6 rounded-3xl">
                 <form @submit.prevent="submitUserForm" class="text-2xl">
-                    <h2 class="text-2xl leading-relaxed text-base-content mb-12">Hi, To Start Demo 
+                    <h2 class="text-2xl leading-relaxed">Hi, To Start Demo 
                         <div class="inline-block w-24 h-8 overflow-hidden rounded-2xl relative top-2">
                             <img src="/assets/images/wall3.jpg" class="w-full h-full object-center object-cover absolute top-0 left-0" alt="Image">
                         </div>
@@ -52,9 +52,9 @@
                             <div class="modal-box p-0">
                                 <div class="p-4 w-full">
                                     <form method="dialog">
-                                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-base-content text-xl">✕</button>
+                                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                                     </form>
-                                    <h3 class="font-bold text-lg text-base-content">Select Cam Device</h3>
+                                    <h3 class="font-bold text-lg">Select Cam Device</h3>
                                 </div>
                                 <form method="dialog" class="space-y-2 max-h-[40vh] overflow-y-auto p-4 w-full overflow-x-hidden">
                                     <ion-button type="submit" @click="switchCam(item.deviceId)" fill="clear" v-for="item in cameras" :key="item.deviceId" class="w-full hover:bg-base-200 text-base-content transition-all rounded-xl p-4"

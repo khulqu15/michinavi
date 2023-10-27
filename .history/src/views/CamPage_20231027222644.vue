@@ -8,7 +8,7 @@
             </div>
             <div class="max-w-md w-full p-6 rounded-3xl">
                 <form @submit.prevent="submitUserForm" class="text-2xl">
-                    <h2 class="text-2xl leading-relaxed text-base-content mb-12">Hi, To Start Demo 
+                    <h2 class="text-2xl leading-relaxed text-base-content">Hi, To Start Demo 
                         <div class="inline-block w-24 h-8 overflow-hidden rounded-2xl relative top-2">
                             <img src="/assets/images/wall3.jpg" class="w-full h-full object-center object-cover absolute top-0 left-0" alt="Image">
                         </div>
@@ -52,7 +52,7 @@
                             <div class="modal-box p-0">
                                 <div class="p-4 w-full">
                                     <form method="dialog">
-                                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-base-content text-xl">✕</button>
+                                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-base-content">✕</button>
                                     </form>
                                     <h3 class="font-bold text-lg text-base-content">Select Cam Device</h3>
                                 </div>

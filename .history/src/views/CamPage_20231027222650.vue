@@ -8,7 +8,7 @@
             </div>
             <div class="max-w-md w-full p-6 rounded-3xl">
                 <form @submit.prevent="submitUserForm" class="text-2xl">
-                    <h2 class="text-2xl leading-relaxed text-base-content mb-12">Hi, To Start Demo 
+                    <h2 class="text-2xl leading-relaxed text-base-content">Hi, To Start Demo 
                         <div class="inline-block w-24 h-8 overflow-hidden rounded-2xl relative top-2">
                             <img src="/assets/images/wall3.jpg" class="w-full h-full object-center object-cover absolute top-0 left-0" alt="Image">
                         </div>
