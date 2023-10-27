@@ -1,7 +1,7 @@
 <template>
     <div class="grid lg:grid-cols-3 grid-cols-2 items-center justify-between gap-x-6 p-6 pb-12">
         <div class="flex items-center gap-2 lg:inline-block hidden">
-            <ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/home" router-direction="back">Home</ion-button>
+            <ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/about" router-direction="back">Home</ion-button>
             <ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/about" router-direction="back">About</ion-button>
             <ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/pricing" router-direction="back">Pricing</ion-button>
             <!-- You can open the modal using ID.showModal() method -->
@@ -19,7 +19,7 @@
                 <div class="drawer-side">
                     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
                     <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-                        <li class="flex items-center"><img src="/assets/images/logo.png" alt="Logo" class="w-20 inline-block"> <span class="text-xl text-primary font-semibold uppercase">MichiNavi</span></li>
+                        <li><img src="/assets/images/logo.png" alt="Logo" class="w-48 inline-block"> <span>MichiNavi</span></li>
                         <li><ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/home" router-direction="back">Home</ion-button></li>
                         <li><ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/about" router-direction="back">About</ion-button></li>
                         <li><ion-button class="btn btn-ghost p-0 mt-0 font-normal normal-case" fill="clear" router-link="/pricing" router-direction="back">Pricing</ion-button></li>

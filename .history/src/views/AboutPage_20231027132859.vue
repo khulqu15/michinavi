@@ -2,7 +2,7 @@
     <ion-page>
       <ion-content :fullscreen="true">
         <navbar-view active="home"/>
-        <div id="container" class="container mx-auto pb-6 mt-6 lg:px-12">
+        <div id="container" class="container mx-auto pb-6 mt-6 lg:px-0 px-12">
           <div class="px-6 py-0 relative mt-4 -top-8 inline-block">
             <h2 class="md:text-4xl text-2xl leading-relaxed break-words">MichiNavi
               <div class="inline-block md:w-72 w-48 h-10 overflow-hidden rounded-2xl relative top-1">

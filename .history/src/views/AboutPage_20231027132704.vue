@@ -2,10 +2,10 @@
     <ion-page>
       <ion-content :fullscreen="true">
         <navbar-view active="home"/>
-        <div id="container" class="container mx-auto pb-6 mt-6 lg:px-12">
+        <div id="container" class="container mx-auto pb-6 mt-6 lg:px-0 px-12">
           <div class="px-6 py-0 relative mt-4 -top-8 inline-block">
-            <h2 class="md:text-4xl text-2xl leading-relaxed break-words">MichiNavi
-              <div class="inline-block md:w-72 w-48 h-10 overflow-hidden rounded-2xl relative top-1">
+            <h2 class="text-4xl leading-relaxed break-words">MichiNavi
+              <div class="inline-block w-72 h-10 overflow-hidden rounded-2xl relative top-1">
                 <img src="/assets/images/wall3.jpg" class="w-full h-full object-center object-cover absolute top-0 left-0" alt="Image">
               </div> <br> Revolutionizing Pothole Detection Technology Today.
             </h2>
