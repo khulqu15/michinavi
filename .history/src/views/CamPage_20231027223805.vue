@@ -150,8 +150,8 @@ function submitUserForm() {
     localStorage.setItem('email', email.value)
     emailLocal.value = email.value
     getAvailableCam()
-    startWebStream()
     contentKey.value += 1
+    startWebStream()
 }
 
 function stopStream() {

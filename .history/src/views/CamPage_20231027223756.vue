@@ -149,9 +149,9 @@ function getLocalUser() {
 function submitUserForm() {
     localStorage.setItem('email', email.value)
     emailLocal.value = email.value
+    contentKey.value += 1
     getAvailableCam()
     startWebStream()
-    contentKey.value += 1
 }
 
 function stopStream() {
