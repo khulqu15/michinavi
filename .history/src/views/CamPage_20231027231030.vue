@@ -52,9 +52,9 @@
                                     <h3 class="font-bold text-lg text-base-content">Select Cam Device</h3>
                                 </div>
                                 <form method="dialog" class="space-y-2 max-h-[40vh] overflow-y-auto p-4 w-full overflow-x-hidden">
-                                    <ion-button type="submit" @click="switchCam(item.deviceId)" fill="clear" v-for="item, index in cameras" :key="item.deviceId" class="w-full hover:bg-base-200 text-base-content transition-all rounded-xl p-4"
+                                    <ion-button type="submit" @click="switchCam(item.deviceId)" fill="clear" v-for="item in cameras" :key="item.deviceId" class="w-full hover:bg-base-200 text-base-content transition-all rounded-xl p-4"
                                     :class="{'bg-base-200': item.deviceId == camera, 'bg-base-100': item.deviceId != camera}">
-                                        {{ item.label ? item.label : 'Camera '+ (index+1) }}
+                                        {{ item.label }}
                                     </ion-button>
                                 </form>
                             </div>
