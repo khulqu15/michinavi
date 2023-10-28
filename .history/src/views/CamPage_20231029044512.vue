@@ -123,10 +123,10 @@
             <input type="checkbox" id="loading_modal" class="modal-toggle" />
             <div class="modal">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">Video Uploading ({{ progressUpload }}%)</h3>
-                    <progress class="progress progress-primary w-full h-3" :value="progressUpload" max="100"></progress>
+                    <h3 class="font-bold text-lg">Video Uploading</h3>
+                    <p class="py-4">This modal works with a hidden checkbox!</p>
                     <div class="modal-action">
-                        <label for="loading_modal" @click="cancelVideo()" class="btn btn-ghost mt-3">Cancel</label>
+                        <label for="loading_modal" class="btn">Close!</label>
                     </div>
                 </div>
             </div>
@@ -170,8 +170,6 @@ const data: Ref<any> = ref()
 const dataSelected: Ref<any> = ref('')
 const isLoad: Ref<boolean> = ref(true)
 const videoUrl: any = ref(null);
-const isUploading = ref<boolean>(false);
-const uploadTask = ref<any>(null);
 const progressUpload: any = ref(0)
 
 async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
@@ -302,32 +300,23 @@ function uploadVideo(event: any) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const storageReference = storageRef(storage, '/' + file.name);
-    uploadTask.value = uploadBytesResumable(storageReference, file);
-    isUploading.value = true;
+    const storageReference = storageRef(storage, 'videos/' + file.name);
+    const uploadTask = uploadBytesResumable(storageReference, file);
     document.getElementById('loading_modal')?.click()
-    uploadTask.value.on('state_changed', (snapshot: any) => {
-            progressUpload.value = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            console.log('Upload is ' + progressUpload.value + '% done');
+    uploadTask.on('state_changed',
+        (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
         },
-        (error: any) => {
+        (error) => {
             console.error("Error uploading video:", error);
-            isUploading.value = false;
         },
         async () => {
-            videoUrl.value = await getDownloadURL(uploadTask.value.snapshot.ref);
+            videoUrl.value = await getDownloadURL(uploadTask.snapshot.ref);
             console.log("Video uploaded successfully. URL:", videoUrl.value);
-            isUploading.value = false;
-            document.getElementById('loading_modal')?.click()
+            document.getElementById('loading_modal')?.click()    
         }
     );
-}
-
-function cancelVideo() {
-    if (uploadTask.value) {
-        uploadTask.value.cancel();
-        isUploading.value = false;
-    }
 }
 
 onBeforeUnmount(() => {

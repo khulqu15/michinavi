@@ -123,10 +123,10 @@
             <input type="checkbox" id="loading_modal" class="modal-toggle" />
             <div class="modal">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">Video Uploading ({{ progressUpload }}%)</h3>
-                    <progress class="progress progress-primary w-full h-3" :value="progressUpload" max="100"></progress>
+                    <h3 class="font-bold text-lg">Video Uploading</h3>
+                    <progress class="progress progress-primary w-56" :value="progressUpload" max="100"></progress>
                     <div class="modal-action">
-                        <label for="loading_modal" @click="cancelVideo()" class="btn btn-ghost mt-3">Cancel</label>
+                        <label for="loading_modal" @click="cancelVideo()" class="btn">Cancel</label>
                     </div>
                 </div>
             </div>
@@ -302,13 +302,13 @@ function uploadVideo(event: any) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const storageReference = storageRef(storage, '/' + file.name);
+    const storageReference = storageRef(storage, 'videos/' + file.name);
     uploadTask.value = uploadBytesResumable(storageReference, file);
     isUploading.value = true;
     document.getElementById('loading_modal')?.click()
     uploadTask.value.on('state_changed', (snapshot: any) => {
-            progressUpload.value = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            console.log('Upload is ' + progressUpload.value + '% done');
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
         },
         (error: any) => {
             console.error("Error uploading video:", error);

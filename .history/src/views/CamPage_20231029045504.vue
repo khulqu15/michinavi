@@ -307,8 +307,8 @@ function uploadVideo(event: any) {
     isUploading.value = true;
     document.getElementById('loading_modal')?.click()
     uploadTask.value.on('state_changed', (snapshot: any) => {
-            progressUpload.value = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            console.log('Upload is ' + progressUpload.value + '% done');
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
         },
         (error: any) => {
             console.error("Error uploading video:", error);

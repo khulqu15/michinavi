@@ -68,7 +68,7 @@
                         :class="{'bg-black text-white': theme == 'light', 'bg-white text-black': theme == 'dark'}"><Icon icon="solar:user-bold-duotone" class="text-2xl"/></ion-button>
                         <ion-button @click="clickVideo()" fill="clear" class="btn px-0 rounded-xl md:btn-md btn-sm border-0"
                         :class="{'bg-black text-white': theme == 'light', 'bg-white text-black': theme == 'dark'}"><Icon icon="solar:upload-bold-duotone" class="text-2xl"/></ion-button>
-                        <input type="file" @change="uploadVideo($event)" class="hidden" id="video_upload" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/ogg">
+                        <input type="file" class="hidden" id="video_upload" accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/ogg">
                     </div>
                 </div>
             </div>
@@ -117,19 +117,6 @@
                     </form>
                 </div>
             </dialog>
-            <label for="loading_modal" class="btn">open modal</label>
-
-            <!-- Put this part before </body> tag -->
-            <input type="checkbox" id="loading_modal" class="modal-toggle" />
-            <div class="modal">
-                <div class="modal-box">
-                    <h3 class="font-bold text-lg">Video Uploading ({{ progressUpload }}%)</h3>
-                    <progress class="progress progress-primary w-full h-3" :value="progressUpload" max="100"></progress>
-                    <div class="modal-action">
-                        <label for="loading_modal" @click="cancelVideo()" class="btn btn-ghost mt-3">Cancel</label>
-                    </div>
-                </div>
-            </div>
             <input type="checkbox" id="detail_modal" class="modal-toggle" />
             <div class="modal fixed z-[1000]">
                 <div class="modal-box max-w-2xl w-full"  v-if="!(data === null || data === undefined || data === '') && !(dataSelected == null || dataSelected == '')">
@@ -153,7 +140,7 @@ import { onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 import { useIonRouter } from '@ionic/vue';
 import { db, storage } from '@/firebase';
 import { onValue, ref as dbRef } from 'firebase/database'
-import { ref as storageRef, getDownloadURL, uploadBytesResumable } from 'firebase/storage'
+import { ref as storageRef, getDownloadURL } from 'firebase/storage'
 
 const router = useIonRouter()
 const videoElement: Ref<any> = ref(null)
@@ -169,10 +156,6 @@ const cameraLabel: Ref<any> = ref(null)
 const data: Ref<any> = ref()
 const dataSelected: Ref<any> = ref('')
 const isLoad: Ref<boolean> = ref(true)
-const videoUrl: any = ref(null);
-const isUploading = ref<boolean>(false);
-const uploadTask = ref<any>(null);
-const progressUpload: any = ref(0)
 
 async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
   return new Promise((resolve) => {
@@ -296,38 +279,6 @@ const startWebStream = async() => {
 function clickVideo() {
     const videoUpload = document.getElementById('video_upload')
     if(videoUpload) videoUpload.click()
-}
-
-function uploadVideo(event: any) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const storageReference = storageRef(storage, '/' + file.name);
-    uploadTask.value = uploadBytesResumable(storageReference, file);
-    isUploading.value = true;
-    document.getElementById('loading_modal')?.click()
-    uploadTask.value.on('state_changed', (snapshot: any) => {
-            progressUpload.value = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            console.log('Upload is ' + progressUpload.value + '% done');
-        },
-        (error: any) => {
-            console.error("Error uploading video:", error);
-            isUploading.value = false;
-        },
-        async () => {
-            videoUrl.value = await getDownloadURL(uploadTask.value.snapshot.ref);
-            console.log("Video uploaded successfully. URL:", videoUrl.value);
-            isUploading.value = false;
-            document.getElementById('loading_modal')?.click()
-        }
-    );
-}
-
-function cancelVideo() {
-    if (uploadTask.value) {
-        uploadTask.value.cancel();
-        isUploading.value = false;
-    }
 }
 
 onBeforeUnmount(() => {
