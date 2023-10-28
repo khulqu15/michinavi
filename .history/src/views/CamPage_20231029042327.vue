@@ -86,7 +86,7 @@
                                 <div v-if="data" class="space-y-3">
                                     <label for="detail_modal" v-for="item, key in data" @click="setSelected(key)" role="button" :key="key" class="md:flex justify-between p-4 bg-gray-100 rounded-xl items-center">
                                         <div class="relative">
-                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ formattedName(item.image) }} ({{ item.width }}, {{ item.height }})</h4>
+                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ formattedName(item.image) }} (12, 4)</h4>
                                             <div class="flex items-center gap-x-3">
                                                 <Icon icon="heroicons:map-pin-20-solid" class="text-xl text-primary"/> 
                                                 <span class="text-sm text-base-content">{{ item.coordinate }}</span>
@@ -154,20 +154,6 @@ const data: Ref<any> = ref()
 const dataSelected: Ref<any> = ref('')
 const isLoad: Ref<boolean> = ref(true)
 
-async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height
-      });
-    };
-    img.src = src;
-  });
-}
-
-
 onMounted(async() => {
     theme.value = localStorage.getItem('theme') || 'light';
     emailLocal.value = localStorage.getItem('email') || null
@@ -188,9 +174,6 @@ function getDataCam() {
                 const dataItem = {...dataResult[key]};
                 const dataImage = storageRef(storage, 'imageName.png');
                 dataItem.imageFile = await getDownloadURL(dataImage);
-                const dimensions = await getImageDimensions(dataItem.imageFile);
-                dataItem.width = dimensions.width;
-                dataItem.height = dimensions.height;
                 dataResult[key] = dataItem;
             }
         }

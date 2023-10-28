@@ -86,7 +86,7 @@
                                 <div v-if="data" class="space-y-3">
                                     <label for="detail_modal" v-for="item, key in data" @click="setSelected(key)" role="button" :key="key" class="md:flex justify-between p-4 bg-gray-100 rounded-xl items-center">
                                         <div class="relative">
-                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ formattedName(item.image) }} ({{ item.width }}, {{ item.height }})</h4>
+                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ formattedName(item.image) }} (12, 4)</h4>
                                             <div class="flex items-center gap-x-3">
                                                 <Icon icon="heroicons:map-pin-20-solid" class="text-xl text-primary"/> 
                                                 <span class="text-sm text-base-content">{{ item.coordinate }}</span>

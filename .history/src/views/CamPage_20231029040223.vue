@@ -69,10 +69,22 @@
                     </div>
                 </div>
             </div>
-            <dialog id="option_modal" class="modal modal-bottom z-[500]">
+            <input type="checkbox" id="detail_modal" class="modal-toggle" />
+            <div class="modal">
+                <div class="modal-box max-w-2xl" v-if="!(data === null || data === undefined || data === '') && !(dataSelected == null || dataSelected == '')">
+                    <h3 class="font-semibold my-0 mb-2 text-base-content">{{ data[dataSelected].image }}</h3>
+                    <div class="flex items-center gap-x-3 mb-4">
+                        <Icon icon="heroicons:map-pin-20-solid" class="text-xl text-primary"/> 
+                        <span class="text-sm text-base-content">{{ data[dataSelected].coordinate }}</span>
+                    </div>
+                    <img :src="data[dataSelected].imageFile"  alt="RecordedDataNih" class="w-full h-full md:mt-0 mt-4 rounded-lg object-cover object-center">
+                    <label class="btn btn-ghost modal-backdrop" for="detail_modal">Close</label>
+                </div>
+            </div>
+            <dialog id="option_modal" class="modal modal-bottom">
                 <div class="modal-box max-w-2xl w-full mx-auto p-0">
                     <form method="dialog" class="w-full flex justify-center py-4">
-                        <button id="optionModal" class="btn px-3 bg-black text-white rounded-xl"><Icon icon="mingcute:down-fill" class="text-2xl"/></button>
+                        <button class="btn px-3 bg-black text-white rounded-xl"><Icon icon="mingcute:down-fill" class="text-2xl"/></button>
                     </form>
                     <div class="px-6">
                         <h3 class="font-bold text-lg font-bold text-base-content">Data Captured <div class="badge badge-primary">{{ (data === null || data === undefined || data === '') ? 0 : Object.keys(data).length }}</div></h3>
@@ -84,9 +96,9 @@
                             </div>
                             <div v-else>
                                 <div v-if="data" class="space-y-3">
-                                    <label for="detail_modal" v-for="item, key in data" @click="setSelected(key)" role="button" :key="key" class="md:flex justify-between p-4 bg-gray-100 rounded-xl items-center">
+                                    <label for="detail_modal" v-for="item, key in data" @click="dataSelected = key" role="button" :key="key" class="md:flex justify-between p-4 bg-gray-100 rounded-xl items-center">
                                         <div class="relative">
-                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ formattedName(item.image) }} ({{ item.width }}, {{ item.height }})</h4>
+                                            <h4 class="font-semibold my-0 mb-2 text-base-content">{{ item.image }} (12, 4)</h4>
                                             <div class="flex items-center gap-x-3">
                                                 <Icon icon="heroicons:map-pin-20-solid" class="text-xl text-primary"/> 
                                                 <span class="text-sm text-base-content">{{ item.coordinate }}</span>
@@ -114,18 +126,6 @@
                     </form>
                 </div>
             </dialog>
-            <input type="checkbox" id="detail_modal" class="modal-toggle" />
-            <div class="modal fixed z-[1000]">
-                <div class="modal-box max-w-2xl w-full"  v-if="!(data === null || data === undefined || data === '') && !(dataSelected == null || dataSelected == '')">
-                    <h3 class="font-semibold my-0 mb-2 text-base-content">{{ data[dataSelected].image }}</h3>
-                    <div class="flex items-center gap-x-3 mb-4">
-                        <Icon icon="heroicons:map-pin-20-solid" class="text-xl text-primary"/> 
-                        <span class="text-sm text-base-content">{{ data[dataSelected].coordinate }}</span>
-                    </div>
-                    <img :src="data[dataSelected].imageFile"  alt="RecordedDataNih" class="w-full h-full md:mt-0 mt-4 rounded-lg object-cover object-center">
-                    <label class="btn btn-ghost text-base-content mt-3 modal-backdrop" for="detail_modal">Close</label>
-                </div>
-            </div>
         </div>
       </ion-content>
     </ion-page>
@@ -135,7 +135,7 @@
 import { IonContent, IonPage, IonButton } from '@ionic/vue';
 import { onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 import { useIonRouter } from '@ionic/vue';
-import { db, storage } from '@/firebase';
+import { auth, db, storage } from '@/firebase';
 import { onValue, ref as dbRef } from 'firebase/database'
 import { ref as storageRef, getDownloadURL } from 'firebase/storage'
 
@@ -153,20 +153,6 @@ const cameraLabel: Ref<any> = ref(null)
 const data: Ref<any> = ref()
 const dataSelected: Ref<any> = ref('')
 const isLoad: Ref<boolean> = ref(true)
-
-async function getImageDimensions(src: string): Promise<{ width: number, height: number }> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      resolve({
-        width: img.width,
-        height: img.height
-      });
-    };
-    img.src = src;
-  });
-}
-
 
 onMounted(async() => {
     theme.value = localStorage.getItem('theme') || 'light';
@@ -188,21 +174,12 @@ function getDataCam() {
                 const dataItem = {...dataResult[key]};
                 const dataImage = storageRef(storage, 'imageName.png');
                 dataItem.imageFile = await getDownloadURL(dataImage);
-                const dimensions = await getImageDimensions(dataItem.imageFile);
-                dataItem.width = dimensions.width;
-                dataItem.height = dimensions.height;
                 dataResult[key] = dataItem;
             }
         }
         data.value = dataResult
         isLoad.value = false
     })
-}
-
-function setSelected(key: any) {
-    dataSelected.value = key
-    const buttonOptionModal = document.getElementById('optionModal')
-    if(buttonOptionModal) buttonOptionModal.click()
 }
 
 function getLocalUser() {
@@ -241,12 +218,6 @@ const getAvailableCam = async() => {
     } catch(error) {
         console.error("Error getting available cameras:", error);
     }
-}
-
-function formattedName(imageName: string) {
-    let formattedName = imageName.split('.')[0];
-    formattedName = formattedName.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    return formattedName;
 }
 
 const switchCam = async(deviceId: any) => {
