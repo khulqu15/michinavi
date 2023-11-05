@@ -156,6 +156,7 @@
 
 <script setup lang="ts">
 
+require('@tensorflow/tfjs-backend-cpu')
 require('@tensorflow/tfjs-backend-webgl')
 
 import { IonContent, IonPage, IonButton } from '@ionic/vue';
@@ -239,7 +240,6 @@ async function initModel() {
         console.log('Loading model from:', modelURL.value);
         console.log('Loading metadata from:', metadataURL.value);
         model.value = await tmImage.load(modelURL.value, metadataURL.value);
-        console.log(model.value)
         maxPredictions.value = model.value.getTotalClasses();
         
         if (labelContainer.value) {

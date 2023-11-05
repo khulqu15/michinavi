@@ -1,0 +1,79 @@
+<div>Teachable Machine Image Model</div>
+<button type="button" onclick="init()">Start</button>
+<button type="button" onclick="switchCamera()">Switch Camera</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    const URL = "./my_model/";
+    let model, webcam, labelContainer, maxPredictions;
+    let currentStream = null; // This will hold the current video stream
+    let currentDeviceId = null; // This will hold the current device id
+    let cameraDevices = []; // This will hold all camera devices
+
+    async function init() {
+        const modelURL = 'https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/model.json';
+        const metadataURL = 'https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/metadata.json';
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+        if(cameraDevices.length === 0) {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            cameraDevices = devices.filter(device => device.kind === 'videoinput');
+        }
+        if(currentDeviceId === null && cameraDevices.length > 0) {
+            currentDeviceId = cameraDevices[0].deviceId;
+        }
+        await setupWebcam(currentDeviceId);
+    }
+
+    async function setupWebcam(deviceId) {
+        if(webcam) {
+            webcam.stop(); // If a webcam instance exists, stop it before creating a new one
+        }
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip, deviceId); // width, height, flip, deviceId
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        if(currentStream) {
+            stopMediaTracks(currentStream); // stop the current stream if it's running
+        }
+        currentStream = webcam.stream;
+        window.requestAnimationFrame(loop);
+        document.getElementById("webcam-container").innerHTML = "";
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    function stopMediaTracks(stream) {
+        stream.getTracks().forEach(track => {
+            track.stop();
+        });
+    }
+
+    async function switchCamera() {
+        let currentDeviceIndex = cameraDevices.findIndex(device => device.deviceId === currentDeviceId);
+        currentDeviceIndex = (currentDeviceIndex + 1) % cameraDevices.length;
+        currentDeviceId = cameraDevices[currentDeviceIndex].deviceId;
+        await setupWebcam(currentDeviceId);
+    }
+
+    async function loop() {
+        webcam.update();
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>

@@ -153,11 +153,7 @@
     </ion-page>
 </template>
   
-
 <script setup lang="ts">
-
-require('@tensorflow/tfjs-backend-webgl')
-
 import { IonContent, IonPage, IonButton } from '@ionic/vue';
 import { onBeforeUnmount, onMounted, Ref, ref } from 'vue';
 import { useIonRouter } from '@ionic/vue';
@@ -186,6 +182,7 @@ const isUploading = ref<boolean>(false);
 const uploadTask = ref<any>(null);
 
 const progressUpload: any = ref(0)
+const URL = "/model/"; // Path to your Teachable Machine model
 const modelURL = ref('https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/model.json');
 const metadataURL = ref('https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/metadata.json');
 const labelContainer: Ref<HTMLElement|null> = ref(null)
@@ -239,7 +236,6 @@ async function initModel() {
         console.log('Loading model from:', modelURL.value);
         console.log('Loading metadata from:', metadataURL.value);
         model.value = await tmImage.load(modelURL.value, metadataURL.value);
-        console.log(model.value)
         maxPredictions.value = model.value.getTotalClasses();
         
         if (labelContainer.value) {

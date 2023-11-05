@@ -239,7 +239,6 @@ async function initModel() {
         console.log('Loading model from:', modelURL.value);
         console.log('Loading metadata from:', metadataURL.value);
         model.value = await tmImage.load(modelURL.value, metadataURL.value);
-        console.log(model.value)
         maxPredictions.value = model.value.getTotalClasses();
         
         if (labelContainer.value) {
