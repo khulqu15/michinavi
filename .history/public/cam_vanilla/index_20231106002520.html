@@ -1,9 +1,8 @@
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
+<button type="button" class="btn btn-ghost" onclick="init()">Start</button>
 <button type="button" class="btn btn-ghost" onclick="switchCamera()">Switch Camera</button>
-<div class="w-full overflow-hidden">
-    <div id="webcam-container" class="w-full min-h-screen"></div>
-</div>
+<div id="webcam-container" class="w-full min-h-screen"></div>
 <div id="label-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
@@ -11,10 +10,6 @@
 let model, webcam, labelContainer, maxPredictions;
 let cameraDevices = [];
 let currentDeviceIndex = 0;
-
-window.addEventListener('load', function() {
-    init()
-});
 
 async function init() {
     const modelURL = 'https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/model.json';
