@@ -63,8 +63,8 @@
                 <div class="absolute max-w-md w-full rounded-xl px-8 shadow-xl py-4 bg-black/30 backdrop-blur-lg right-6 bottom-6">
                   <h2 class="text-white leading-relaxed">Pendeteksian dini kerusakan jalan dapat mencegah kecelakaan yang fatal.</h2>
                   <div class="mt-12 flex justify-end items-center mb-4">
-                    <a  href="/cam_vanilla" class="btn rounded-full border-0 px-8"
-                    :class="{'bg-white text-black': theme == 'light', 'bg-black text-white': theme == 'dark'}">Mulai Sekarang <Icon icon="solar:map-arrow-up-bold-duotone" class="text-xl rotate-45 ml-2" /></a>
+                    <ion-button fill="clear" router-link="/cam_vanilla" router-direction="back" class="btn rounded-full"
+                    :class="{'bg-white text-black': theme == 'light', 'bg-black text-white': theme == 'dark'}">Mulai Sekarang <Icon icon="solar:map-arrow-up-bold-duotone" class="text-xl rotate-45 ml-2" /></ion-button>
                   </div>
                 </div>
               </div>

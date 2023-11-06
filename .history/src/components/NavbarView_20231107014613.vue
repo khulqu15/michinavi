@@ -77,6 +77,7 @@ export default {
         onMounted(() => {
             theme.value = localStorage.getItem('theme') || 'light';
             method.value = localStorage.getItem('method') || 0
+            changeMethod()
         });
 
         function changeTheme() {

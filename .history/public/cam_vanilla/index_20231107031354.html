@@ -15,13 +15,6 @@
         </button>
     </div>
 </div>
-<div class="w-full flex items-center justify-center absolute z-10 bottom-0 left-0">
-    <div class="p-3 border-0 rounded-t-2xl bg-white flex gap-x-3 items-center">
-        <button type="button" class="btn bg-black text-white border-0" onclick="toggleData()">
-            <iconify-icon icon="ep:top" class="text-2xl"></iconify-icon>
-        </button>
-    </div>
-</div>
 <div class="w-full overflow-hidden">
     <div id="webcam-container" class="w-full min-h-screen"></div>
 </div>
@@ -33,17 +26,12 @@
         <div id="label-container"></div>
     </div>
 </div>
-<div id="data-content" class="absolute hidden z-20 w-full flex items-center justify-center bottom-0 left-0">
-    <div class="rounded-t-2xl w-full bg-white text-black max-w-2xl shadow-2xl relative">
-        <div class="p-6">
-            <h4 class="text-xl font-bold">Recorded Data <span class="badge badge-primary text-sm" id="sum_data"></span></h4>
-        </div>
-        <button class="btn btn-ghost absolute right-0 top-0" onclick="toggleData()">
+<div id="data" class="absolute z-20 w-full flex items-center p-4 justify-center bottom-0 left-0">
+    <div class="p-6 rounded-2xl w-full bg-white text-black max-w-2xl shadow-2xl relative">
+        <button class="btn btn-ghost absolute right-0 top-0" onclick="toggleAnalytic()">
             <iconify-icon icon="carbon:close-filled" class="text-2xl"></iconify-icon>
         </button>
-        <div class="p-6 max-h-[50vh] overflow-y-auto">
-            <div id="data-container"></div>
-        </div>
+        <div id="data-container"></div>
     </div>
 </div>
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -56,15 +44,10 @@
 let model, webcam, labelContainer, maxPredictions;
 let cameraDevices = [];
 let currentDeviceIndex = 0;
-let isOpenData = false;
-let isOpenAnalytic = false;
-let analyticsContent = document.getElementById('analytics');
-let dataContent = document.getElementById('data-content');
-let dataContainer = document.getElementById('data-container');
-let latitude = 0;
-let longitude = 0;
-let fileImageName = '';
-let has_sended = false;
+let isOpenAnalytic = false
+let analyticsContent = document.getElementById('analytics')
+let dataContent = document.getElementById('data')
+let dataContainer = document.getElementById('data-container')
 
 const firebaseConfig = {
     apiKey: "AIzaSyBKKGyuEMl8x5vsKmynWnZ0tEs1rViG03k",
@@ -79,48 +62,11 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const storage = firebase.storage();
-const dataRef = firebase.database().ref('michiapp/data')
-const configRef = firebase.database().ref('michiapp/config')
-let config = {
-    berlubang: 0,
-    buaya: 0,
-    dayRoad: 0,
-    melintang: 0,
-    memanjang: 0,
-    nightRoad: 0,
-    timeout: 0,
-}
-let predicts = {
-    berlubang: 0,
-    buaya: 0,
-    dayRoad: 0,
-    melintang: 0,
-    memanjang: 0,
-    nightRoad: 0,
-}
+const dataRef = firebase.database().ref('michiapp/data');
 window.addEventListener('load', function() {
     init()
-    getConfigValue()
-    generateImageName()
     getDataCam()
-    getLocation()
 });
-
-function getConfigValue() {
-    configRef.on('value', async(snapshot) => {
-        const configResult = snapshot.val()
-        if(configResult) {
-            config.berlubang = configResult.berlubang
-            config.buaya = configResult.buaya
-            config.dayRoad = configResult.dayRoad
-            config.melintang = configResult.melintang
-            config.memanjang = configResult.memanjang
-            config.nightRoad = configResult.nightRoad
-            config.timeout = configResult.timeout
-            console.log(config)
-        }
-    })
-}
 
 function getDataCam() {
     dataRef.on('value', async (snapshot) => {
@@ -131,38 +77,37 @@ function getDataCam() {
             for (const key of objectKeys) {
                 if (dataResult[key]) {
                     const dataItem = { ...dataResult[key] };
-                    const itemDiv = document.createElement('div')
-                    itemDiv.classList.add('data-item', 'p-3', 'hover:bg-gray-100', 'my-2')
-                    const coordinates = document.createElement('p');
-                    coordinates.textContent = `Coordinates: ${dataItem.Coordinate || dataItem.coordinate}`;
-                    itemDiv.appendChild(coordinates);
-                    if (dataItem.image && dataItem.image.trim() !== "") {
+                    if (dataItem.imageName && dataItem.imageName.trim() !== "") {
+                        const itemDiv = document.createElement('div')
+                        itemDiv.classList.add('data-item')
+                        const coordinates = document.createElement('p');
+                        coordinates.textContent = `Coordinates: ${dataItem.Coordinate}`;
+                        itemDiv.appendChild(coordinates);
                         try {
-                            const dataImage = storage.ref(dataItem.image);
+                            const dataImage = storage.ref(dataItem.imageName);
                             dataItem.imageFile = await dataImage.getDownloadURL();
                             
                             const image = new Image();
                             image.src = dataItem.imageFile;
                             image.alt = 'Data Image';
-                            image.classList.add('w-full', 'object-center', 'object-cover');
-                            image.style.height = '240px';
+                            image.style.width = '100px'; // Set the width of the image, or style as needed
+                            image.style.height = '100px'; // Set the height of the image, or style as needed
                             itemDiv.appendChild(image);
-                            // const dimensions = await getImageDimensions(dataItem.imageFile);
-                            // dataItem.width = dimensions.width;
-                            // dataItem.height = dimensions.height;
+                            const dimensions = await getImageDimensions(dataItem.imageFile);
+                            dataItem.width = dimensions.width;
+                            dataItem.height = dimensions.height;
                             dataResult[key] = dataItem;
                         } catch (error) {
                             console.error("Error getting download URL: ", error);
                         }
+                        dataContainer.appendChild(itemDiv);
                     } else {
                         console.warn(`Invalid or missing imageName for key ${key}`);
                     }
-                    dataContainer.appendChild(itemDiv);
                 }
             }
         }
         console.log(dataResult);
-        document.getElementById('sum_data').innerHTML = Object.keys(dataResult).length
     });
 }
 
@@ -170,13 +115,6 @@ function toggleAnalytic() {
     isOpenAnalytic = !isOpenAnalytic
     if(isOpenAnalytic) analyticsContent.classList.remove('hidden')
     else analyticsContent.classList.add('hidden')
-}
-
-function toggleData() {
-    console.log('toggle data')
-    isOpenData = !isOpenData
-    if(isOpenData) dataContent.classList.remove('hidden')
-    else dataContent.classList.add('hidden')
 }
 
 async function init() {
@@ -220,43 +158,6 @@ async function loop() {
     webcam.update();
     await predict();
     window.requestAnimationFrame(loop);
-}
-
-function getLocation() {
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            latitude = position.coords.latitude;
-            longitude = position.coords.longitude;
-            console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-            // You can do something with the latitude and longitude here
-        }, function(error) {
-            console.error("Error Code = " + error.code + " - " + error.message);
-        });
-    } else {
-        console.log("Geolocation is not supported by this browser.");
-    }
-}
-
-async function captureImage() {
-    if(webcam) {
-        const imageSrc = webcam.canvas.toDataURL('image/png')
-        const blob = await dataURItoBlob(imageSrc)
-        const storageRef = firebase.storage().ref();
-        const snapshot = await storageRef.child(fileImageName).put(blob);
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        console.log('Image uploaded and available at:', downloadURL);
-    }
-}
-
-function dataURItoBlob(dataURI) {
-    const byteString = atob(dataURI.split(',')[1]);
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], {type: mimeString});
 }
 
 function updateOverlay(prediction) {
@@ -304,71 +205,12 @@ function updateOverlay(prediction) {
     document.getElementById("webcam-overlay").style.border = `4px solid ${color}`;
 }
 
-function captureData() {
-    getLocation()
-    const newDataEntry = {
-        coordinate: `${latitude},${longitude}`,
-        image: `${fileImageName}`,
-        predictions: predicts
-    }
-    dataRef.push(newDataEntry, function(error) {
-        if (error) {
-            console.log("Data could not be saved." + error);
-        } else {
-            console.log("Data saved successfully.");
-        }
-    });
-    captureImage()
-    generateImageName()
-}
-
-function generateImageName() {
-    const now = new Date();
-
-    const imageName = [
-        now.getFullYear(),
-        ('0' + (now.getMonth() + 1)).slice(-2),
-        ('0' + now.getDate()).slice(-2),
-        '_',
-        ('0' + now.getHours()).slice(-2),
-        ('0' + now.getMinutes()).slice(-2),
-        ('0' + now.getSeconds()).slice(-2)
-    ].join('');
-
-    fileImageName = imageName + '.png';
-}
-
 
 async function predict() {
     const prediction = await model.predict(webcam.canvas);
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
         labelContainer.childNodes[i].innerHTML = classPrediction;
-    }
-    predicts.berlubang = prediction[0].probability * 100
-    predicts.melintang = prediction[1].probability * 100
-    predicts.memanjang = prediction[2].probability * 100
-    predicts.buaya = prediction[3].probability * 100
-    predicts.dayRoad = prediction[4].probability * 100
-    predicts.nightRoad = prediction[5].probability * 100
-    if(!has_sended) {
-        if(
-            (
-                prediction[0].probability >= config.berlubang ||
-                prediction[1].probability >= config.melintang ||
-                prediction[2].probability >= config.memanjang ||
-                prediction[3].probability >= config.buaya
-            ) && (
-                prediction[4].probability >= config.dayRoad ||
-                prediction[5].probability >= config.nightRoad
-            )
-        ) {
-            has_sended = true
-            captureData()
-            setTimeout(function() {
-                has_sended = false
-            }, config.timeout)
-        }
     }
     updateOverlay(prediction);
 }

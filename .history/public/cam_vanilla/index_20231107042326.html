@@ -15,13 +15,6 @@
         </button>
     </div>
 </div>
-<div class="w-full flex items-center justify-center absolute z-10 bottom-0 left-0">
-    <div class="p-3 border-0 rounded-t-2xl bg-white flex gap-x-3 items-center">
-        <button type="button" class="btn bg-black text-white border-0" onclick="toggleData()">
-            <iconify-icon icon="ep:top" class="text-2xl"></iconify-icon>
-        </button>
-    </div>
-</div>
 <div class="w-full overflow-hidden">
     <div id="webcam-container" class="w-full min-h-screen"></div>
 </div>
@@ -33,12 +26,12 @@
         <div id="label-container"></div>
     </div>
 </div>
-<div id="data-content" class="absolute hidden z-20 w-full flex items-center justify-center bottom-0 left-0">
+<div id="data" class="absolute z-20 w-full flex items-center justify-center bottom-0 left-0">
     <div class="rounded-t-2xl w-full bg-white text-black max-w-2xl shadow-2xl relative">
         <div class="p-6">
             <h4 class="text-xl font-bold">Recorded Data <span class="badge badge-primary text-sm" id="sum_data"></span></h4>
         </div>
-        <button class="btn btn-ghost absolute right-0 top-0" onclick="toggleData()">
+        <button class="btn btn-ghost absolute right-0 top-0" onclick="toggleAnalytic()">
             <iconify-icon icon="carbon:close-filled" class="text-2xl"></iconify-icon>
         </button>
         <div class="p-6 max-h-[50vh] overflow-y-auto">
@@ -56,15 +49,14 @@
 let model, webcam, labelContainer, maxPredictions;
 let cameraDevices = [];
 let currentDeviceIndex = 0;
-let isOpenData = false;
-let isOpenAnalytic = false;
-let analyticsContent = document.getElementById('analytics');
-let dataContent = document.getElementById('data-content');
-let dataContainer = document.getElementById('data-container');
-let latitude = 0;
-let longitude = 0;
-let fileImageName = '';
-let has_sended = false;
+let isOpenAnalytic = false
+let analyticsContent = document.getElementById('analytics')
+let dataContent = document.getElementById('data')
+let dataContainer = document.getElementById('data-container')
+let latitude = 0
+let longitude = 0
+let fileImageName = ''
+let has_sended = false
 
 const firebaseConfig = {
     apiKey: "AIzaSyBKKGyuEMl8x5vsKmynWnZ0tEs1rViG03k",
@@ -170,13 +162,6 @@ function toggleAnalytic() {
     isOpenAnalytic = !isOpenAnalytic
     if(isOpenAnalytic) analyticsContent.classList.remove('hidden')
     else analyticsContent.classList.add('hidden')
-}
-
-function toggleData() {
-    console.log('toggle data')
-    isOpenData = !isOpenData
-    if(isOpenData) dataContent.classList.remove('hidden')
-    else dataContent.classList.add('hidden')
 }
 
 async function init() {
@@ -351,7 +336,7 @@ async function predict() {
     predicts.buaya = prediction[3].probability * 100
     predicts.dayRoad = prediction[4].probability * 100
     predicts.nightRoad = prediction[5].probability * 100
-    if(!has_sended) {
+    setTimeout(function() {
         if(
             (
                 prediction[0].probability >= config.berlubang ||
@@ -363,13 +348,9 @@ async function predict() {
                 prediction[5].probability >= config.nightRoad
             )
         ) {
-            has_sended = true
-            captureData()
-            setTimeout(function() {
-                has_sended = false
-            }, config.timeout)
+            if(!has_sended) captureData()
         }
-    }
+    }, config.timeout)
     updateOverlay(prediction);
 }
 </script>

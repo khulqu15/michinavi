@@ -1,0 +1,117 @@
+<link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.tailwindcss.com"></script>
+<div class="w-full flex items-center justify-between absolute top-0 left-0">
+    <div class="p-3 border-0 rounded-br-2xl bg-white">
+        <a href="/home" class="btn bg-black text-white border-0">
+            <iconify-icon icon="mingcute:left-fill" class="text-2xl text-white"></iconify-icon>
+        </a>
+    </div>
+    <div class="p-3 border-0 rounded-bl-2xl bg-white flex gap-x-3 items-center">
+        <button type="button" class="btn bg-black text-white border-0" onclick="switchCamera()">
+            <iconify-icon icon="lucide:switch-camera" class="text-2xl"></iconify-icon>
+        </button>
+        <button type="button" class="btn bg-black text-white border-0" onclick="toggleAnalytic()">
+            <iconify-icon icon="mingcute:classify-2-line" class="text-2xl"></iconify-icon>
+        </button>
+    </div>
+</div>
+<div class="w-full overflow-hidden">
+    <div id="webcam-container" class="w-full min-h-screen"></div>
+</div>
+<div id="analytics" class="absolute w-full flex items-center p-4 justify-center top-0 left-0">
+    <div class="p-6 rounded-2xl w-full bg-white text-black max-w-2xl shadow-2xl relative">
+        <button class="btn btn-ghost absolute right-0 top-0" onclick="toggleAnalytic()">
+            <iconify-icon icon="carbon:close-filled" class="text-2xl"></iconify-icon>
+        </button>
+        <div id="label-container"></div>
+    </div>
+</div>
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+let model, webcam, labelContainer, maxPredictions;
+let cameraDevices = [];
+let currentDeviceIndex = 0;
+let isOpenAnalytic = false
+let analyticsContent = document.getElementById('analytics')
+
+window.addEventListener('load', function() {
+    init()
+});
+
+function toggleAnalytic() {
+    isOpenAnalytic = !isOpenAnalytic
+    if(isOpenAnalytic) analyticsContent.classList.remove('hidden')
+    else analyticsContent.classList.add('hidden')
+}
+
+async function init() {
+    const modelURL = 'https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/model.json';
+    const metadataURL = 'https://raw.githubusercontent.com/khulqu15/michinavi/main/public/model/metadata.json';
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    cameraDevices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'videoinput');
+    if (cameraDevices.length === 0) {
+        alert("No camera found on this device.");
+        return;
+    }
+    await setupWebcam(cameraDevices[currentDeviceIndex].deviceId);
+}
+
+async function setupWebcam(deviceId) {
+    if (webcam) {
+        webcam.stop();
+    }
+    webcam = new tmImage.Webcam(window.innerWidth, window.innerHeight, true);
+    await webcam.setup({ deviceId });
+    await webcam.play();
+    window.requestAnimationFrame(loop);
+    document.getElementById("webcam-container").innerHTML = "";
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    labelContainer = document.getElementById("label-container");
+    labelContainer.innerHTML = "";
+    for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+    }
+}
+
+async function switchCamera() {
+    currentDeviceIndex = (currentDeviceIndex + 1) % cameraDevices.length;
+    const deviceId = cameraDevices[currentDeviceIndex].deviceId;
+    await setupWebcam(deviceId);
+}
+
+async function loop() {
+    webcam.update();
+    await predict();
+    window.requestAnimationFrame(loop);
+}
+
+async function predict() {
+    const prediction = await model.predict(webcam.canvas);
+    let highestProbability = 0;
+    let highestClass = '';
+    for (let i = 0; i < maxPredictions; i++) {
+        if (prediction[i].probability > highestProbability) {
+            highestProbability = prediction[i].probability;
+            highestClass = prediction[i].className;
+        }
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+    }
+    if (highestProbability > 0.5) { // threshold probability to draw a bounding box
+        const context = webcam.canvas.getContext('2d');
+        context.beginPath();
+        context.rect(0, 0, webcam.canvas.width, webcam.canvas.height);
+        context.lineWidth = 4;
+        context.strokeStyle = 'green';
+        context.stroke();
+
+        context.font = '18px Arial';
+        context.fillStyle = 'green';
+        context.fillText(highestClass + ' detected', 10, 25);
+    }
+}
+</script>
