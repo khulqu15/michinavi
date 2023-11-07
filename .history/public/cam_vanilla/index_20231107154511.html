@@ -2,9 +2,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <div class="w-full flex items-center justify-between absolute z-10 top-0 left-0">
     <div class="p-3 border-0 rounded-br-2xl bg-white">
-        <button onclick="onback()" class="btn bg-black text-white border-0">
+        <a href="/home" class="btn bg-black text-white border-0">
             <iconify-icon icon="mingcute:left-fill" class="text-2xl text-white"></iconify-icon>
-        </button>
+        </a>
     </div>
     <div class="p-3 border-0 rounded-bl-2xl bg-white flex gap-x-3 items-center">
         <button type="button" class="btn bg-black text-white border-0" onclick="switchCamera()">
@@ -106,10 +106,6 @@ window.addEventListener('load', function() {
     getDataCam()
     getLocation()
 });
-
-function onback() {
-    window.location = config.app + '/home'
-}
 
 function getConfigValue() {
     configRef.on('value', async(snapshot) => {
